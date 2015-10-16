@@ -30,13 +30,22 @@ public class GTParking {
         // TODO
     }
 
-    public Permit getPermit(int gtID) {
+    public Permit getPermit(int gtID) throws NoSuchItemException {
         Permit dummy = new Permit("dummy", gtID);
-        return (Permit) permits.get(permits.indexOf(dummy));
+        int index = permits.indexOf(dummy);
+        if (-1 == index) {
+            throw new NoSuchItemException(String.valueOf(gtID));
+        }
+
+        return (Permit) permits.get(index);
     }
 
-    public Lot getLot(int index) {
-        return (Lot) lots.get(index);
+    public Lot getLot(int index) throws NoSuchItemException {
+        try {
+            return (Lot) lots.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new NoSuchItemException(String.valueOf(index), e);
+        }
     }
 
     public void printLotList() {
@@ -59,7 +68,7 @@ public class GTParking {
         boolean quit = false;
 
         while (!quit) {
-            System.out.println("1. Create a new parking log");
+            System.out.println("1. Create a new parking lot");
             System.out.println("2. Create a new permit");
             System.out.println("3. Enter lot (with a permit)");
             System.out.println("4. Issue citation");
@@ -86,6 +95,7 @@ public class GTParking {
                 System.out.println("I/O Error: try again");
                 System.out.println(e);
             }
+            System.out.println();
         }
     }
 
@@ -134,8 +144,13 @@ public class GTParking {
         System.out.println("Assign permit to which lot?");
         int permitLot = Integer.parseUnsignedInt(in.readLine());
 
-        parking.addPermit(new Permit(permitName, permitGTID),
-                          parking.getLot(permitLot));
+        try {
+            parking.addPermit(new Permit(permitName, permitGTID),
+                              parking.getLot(permitLot));
+        } catch (NoSuchItemException e) {
+            System.out.println("Lot not found: " + e.getMessage());
+            System.out.println("Permit not added.");
+        }
     }
 
     public static void enterLot(GTParking parking, BufferedReader in)
@@ -147,8 +162,25 @@ public class GTParking {
         System.out.println("Enter which lot?");
         int permitLot = Integer.parseUnsignedInt(in.readLine());
 
-        parking.enterLot(parking.getPermit(permitGTID),
-                         parking.getLot(permitLot));
+        Permit enteringPermit = null;
+        try {
+            enteringPermit = parking.getPermit(permitGTID);
+        } catch (NoSuchItemException e) {
+            System.out.println("Permit not found: " + e.getMessage());
+        }
+
+        Lot lotEntered = null;
+        try {
+            lotEntered = parking.getLot(permitLot);
+        } catch (NoSuchItemException e) {
+            System.out.println("Lot not found: " + e.getMessage());
+        }
+
+        if (null != enteringPermit && null != lotEntered) {
+            parking.enterLot(enteringPermit, lotEntered);
+        } else {
+            System.out.println("Lot not entered.");
+        }
     }
 
     public static void issueCitation(GTParking parking, BufferedReader in)
@@ -156,6 +188,11 @@ public class GTParking {
         System.out.println("Enter GTID of the permit to ticket:");
         int permitGTID = Integer.parseUnsignedInt(in.readLine());
 
-        parking.issueCitation(parking.getPermit(permitGTID));
+        try {
+            parking.issueCitation(parking.getPermit(permitGTID));
+        } catch (NoSuchItemException e) {
+            System.out.println("Permit not found: " + e.getMessage());
+            System.out.println("Citation not issued.");
+        }
     }
 }
