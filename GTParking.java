@@ -14,8 +14,12 @@ public class GTParking {
         permits = new ArrayList();
     }
 
-    public void addLot(Lot newLot) {
-        // TODO
+    public void addLot(Lot newLot) throws ItemAlreadyExistsException {
+        if (lots.contains(newLot)) {
+            throw new ItemAlreadyExistsException(newLot.toString());
+        } else {
+            lots.add(newLot);
+        }
     }
 
     public void addPermit(Permit newPermit, Lot toLot) {
@@ -129,7 +133,12 @@ public class GTParking {
             }
         } while (null == parkingLot);
 
-        parking.addLot(parkingLot);
+        try {
+            parking.addLot(parkingLot);
+        } catch (ItemAlreadyExistsException e) {
+            System.out.println("Lot not added. Lot already exists: "
+                    + e.getMessage());
+        }
     }
 
     public static void createNewPermit(GTParking parking, BufferedReader in)
