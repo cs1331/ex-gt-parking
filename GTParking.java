@@ -6,12 +6,12 @@ import java.util.ArrayList;
 
 public class GTParking {
 
-    private List lots;
-    private List permits;
+    private List<Lot> lots;
+    private List<Permit> permits;
 
     public GTParking() {
-        lots = new ArrayList();
-        permits = new ArrayList();
+        lots = new ArrayList<Lot>();
+        permits = new ArrayList<Permit>();
     }
 
     public void addLot(Lot newLot) throws ItemAlreadyExistsException {
@@ -55,7 +55,7 @@ public class GTParking {
     public void printLotList() {
         for (int i = 0; i < lots.size(); ++i) {
             System.out.print(i + ". " + lots.get(i));
-            if (0 == ((Lot) lots.get(i)).getNumAvailableSpots()) {
+            if (0 == lots.get(i).getNumAvailableSpots()) {
                 System.out.print(" (FULL)");
             }
             System.out.println();
