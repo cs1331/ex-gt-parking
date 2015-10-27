@@ -1,11 +1,11 @@
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Lot {
 
     private String name;
     private int capacity;
-    private Set<Permit> assignedPermits;
+    private SortedSet<Permit> assignedPermits;
 
     public Lot(String name, int capacity) {
         this.name = name;
@@ -15,6 +15,18 @@ public class Lot {
 
     public int getNumAvailableSpots() {
         return capacity - assignedPermits.size();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addPermit(Permit newPermit)
+      throws ItemAlreadyExistsException {
+
+        if (!assignedPermits.add(newPermit)) {
+            throw new ItemAlreadyExistsException(newPermit.toString());
+        }
     }
 
     @Override

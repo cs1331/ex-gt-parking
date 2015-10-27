@@ -22,8 +22,15 @@ public class GTParking {
         }
     }
 
-    public void addPermit(Permit newPermit, Lot toLot) {
-        // TODO
+    public void addPermit(Permit newPermit, Lot toLot)
+      throws ItemAlreadyExistsException {
+
+        if (permits.contains(newPermit)) {
+            throw new ItemAlreadyExistsException(newPermit.toString());
+        } else {
+            toLot.addPermit(newPermit);
+            permits.add(newPermit);
+        }
     }
 
     public void enterLot(Permit permit, Lot toLot) {
@@ -158,6 +165,10 @@ public class GTParking {
                               parking.getLot(permitLot));
         } catch (NoSuchItemException e) {
             System.out.println("Lot not found: " + e.getMessage());
+            System.out.println("Permit not added.");
+        } catch (ItemAlreadyExistsException e) {
+            System.out.println("Permit already exists: "
+                    + permitName + " / " + permitGTID);
             System.out.println("Permit not added.");
         }
     }
